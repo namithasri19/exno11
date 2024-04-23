@@ -1,0 +1,57 @@
+<?php
+$nameErr = $descErr = $priceErr = "";
+$name = $desc = $price = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (empty($_POST["name"])) {
+        $nameErr = "Product name is required";
+    } else {
+        $name = test_input($_POST["name"]);
+    }
+
+    if (empty($_POST["description"])) {
+        $descErr = "Description is required";
+    } else {
+        $desc = test_input($_POST["description"]);
+    }
+
+    if (empty($_POST["price"])) {
+        $priceErr = "Price is required";
+    } else {
+        $price = test_input($_POST["price"]);
+        // Validate price as numeric
+        if (!is_numeric($price)) {
+            $priceErr = "Price must be a valid number";
+        }
+    }
+
+    if (empty($nameErr) && empty($descErr) && empty($priceErr)) {
+        // Redirect to db.php for database insertion
+        header("Location: db.php?name=$name&description=$desc&price=$price");
+        exit();
+    }
+}
+
+function test_input($data) {
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
+?>
+
+<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+    Product Name: <input type="text" name="name">
+    <span class="error"><?php echo $nameErr;?></span><br><br>
+    Description: <textarea name="description" rows="5" cols="40"></textarea>
+    <span class="error"><?php echo $descErr;?></span><br><br>
+    Price: <input type="text" name="price">
+    <span class="error"><?php echo $priceErr;?></span><br><br>
+    <input type="submit" name="submit" value="Submit">
+</form>
+
+<style>
+ .error {
+ color:red;
+ }
+</style>
